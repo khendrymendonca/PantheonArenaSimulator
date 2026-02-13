@@ -78,51 +78,117 @@ socket.on('erro', (msg) => {
 function atualizarTodaInterface(estado) {
     if (!estado) return;
 
-    // Localizar eu mesmo pelo socket.id
     const meuSid = socket.id;
     const eu = estado.jogadores[meuSid];
 
-    // Outros jogadores são oponentes
-    const oponentes = Object.entries(estado.jogadores).filter(([sid, p]) => sid !== meuSid);
-
-    // Atualiza Meu Painel
-    if (eu) {
-        atualizarPainel(eu, 'meu');
-
-        // Botão de Efeito de Passiva (Apolo)
-        if (eu.pes !== undefined) {
-            btnAtivarBencao.style.display = 'block';
-            btnAtivarBencao.disabled = (estado.turno_sid !== meuSid) || eu.pes < 3;
-        } else {
-            btnAtivarBencao.style.display = 'none';
-        }
-    }
-
-    // Renderizar lista de Oponentes
-    const containerOpp = document.getElementById('container-oponentes');
-    containerOpp.innerHTML = '';
-
-    oponentes.forEach(([sid, opp]) => {
-        const div = renderizarPainelOponente(opp, sid, sid === estado.turno_sid);
-        containerOpp.appendChild(div);
-    });
-
-    // Turno
-    const meuTurno = estado.turno_sid === meuSid;
-    btnPassarTurno.disabled = !meuTurno;
-
-    if (estado.vencedor) {
-        indicadorTurno.innerHTML = `<span style="color: gold; text-shadow: 0 0 10px gold">VENCEDOR: ${estado.vencedor}</span>`;
-        btnPassarTurno.disabled = true;
+    // Gerenciar Telas
+    if (estado.fase === 'espera') {
+        overlayLogin.style.display = eu ? 'none' : 'flex';
+        document.getElementById('sala-espera').style.display = eu ? 'flex' : 'none';
+        tabuleiro.style.display = 'none';
+        atualizarSalaEspera(estado);
     } else {
-        indicadorTurno.innerText = meuTurno ? "SEU TURNO - CLAME SUA VITÓRIA" : `ESPERANDO TURNO...`;
+        overlayLogin.style.display = 'none';
+        document.getElementById('sala-espera').style.display = 'none';
+        tabuleiro.style.display = 'flex';
+
+        // Outros jogadores são oponentes
+        const oponentes = Object.entries(estado.jogadores).filter(([sid, p]) => sid !== meuSid);
+
+        // Atualiza Meu Painel
+        if (eu) {
+            atualizarPainelPremium(eu, 'meu', estado.turno_sid === meuSid);
+
+            // Botão de Efeito de Passiva (Apolo)
+            if (eu.pes !== undefined) {
+                btnAtivarBencao.style.display = 'block';
+                btnAtivarBencao.disabled = (estado.turno_sid !== meuSid) || eu.pes < 3;
+            } else {
+                btnAtivarBencao.style.display = 'none';
+            }
+        }
+
+        // Renderizar lista de Oponentes
+        const containerOpp = document.getElementById('container-oponentes');
+        containerOpp.innerHTML = '';
+
+        oponentes.forEach(([sid, opp]) => {
+            const div = renderizarPainelOponente(opp, sid, sid === estado.turno_sid);
+            containerOpp.appendChild(div);
+        });
+
+        // Turno
+        const meuTurno = estado.turno_sid === meuSid;
+        btnPassarTurno.disabled = !meuTurno;
+
+        if (estado.vencedor) {
+            indicadorTurno.innerHTML = `<span style="color: gold; text-shadow: 0 0 10px gold">VENCEDOR: ${estado.vencedor}</span>`;
+            btnPassarTurno.disabled = true;
+        } else {
+            indicadorTurno.innerText = meuTurno ? "SEU TURNO" : `AGUARDANDO...`;
+        }
+
+        // Logs
+        atualizarLogs(estado.logs);
+
+        // Mão
+        renderizarMao(eu ? eu.mao : [], eu ? eu.energia : 0, meuTurno);
     }
+}
 
-    // Logs
-    atualizarLogs(estado.logs);
+function atualizarSalaEspera(estado) {
+    const lista = document.getElementById('lista-jogadores');
+    lista.innerHTML = Object.values(estado.jogadores).map(p => `
+        <div class="vidro" style="padding: 10px; margin-bottom: 5px; display: flex; justify-content: space-between; border-left: 4px solid var(--ouro)">
+            <span>${p.nome}</span>
+            <span style="font-size: 0.7rem; color: var(--texto-mutado)">PRONTO</span>
+        </div>
+    `).join('');
 
-    // Mão
-    renderizarMao(eu ? eu.mao : [], eu ? eu.energia : 0, meuTurno);
+    const btnIniciar = document.getElementById('btn-iniciar-jogo');
+    const msgEspera = document.getElementById('msg-espera');
+
+    if (estado.id_mestre === socket.id) {
+        btnIniciar.style.display = 'block';
+        msgEspera.innerText = "Você é o Mestre da Arena!";
+    } else {
+        btnIniciar.style.display = 'none';
+        msgEspera.innerText = "Aguardando o mestre iniciar a batalha...";
+    }
+}
+
+function atualizarPainelPremium(player, prefixo, ehTurno) {
+    // Corrigir Nome
+    const elNome = document.getElementById(`${prefixo}-nome`);
+    if (elNome) elNome.innerText = player.nome;
+
+    // HP e Energia em Círculos (Badges)
+    const elHp = document.getElementById(`${prefixo}-hp`);
+    if (elHp) elHp.innerText = player.vida;
+
+    const elEnergia = document.getElementById(`${prefixo}-energia`);
+    if (elEnergia) elEnergia.innerText = player.energia;
+
+    const elPes = document.getElementById(`${prefixo}-pes`);
+    if (elPes) elPes.innerText = player.pes || 0;
+
+    // Atributos
+    document.getElementById(`${prefixo}-atq`).innerText = player.atributos.atq;
+    document.getElementById(`${prefixo}-def`).innerText = player.atributos.defesa;
+    document.getElementById(`${prefixo}-dom`).innerText = player.atributos.dom;
+    document.getElementById(`${prefixo}-res`).innerText = player.atributos.res;
+
+    // Barra de Vida
+    const porcentagem = Math.min(100, (player.vida / 30) * 100);
+    const barra = document.getElementById(`${prefixo}-hp-barra`);
+    if (barra) barra.style.width = `${porcentagem}%`;
+
+    // Painel Ativo
+    const painel = document.getElementById('painel-jogador');
+    if (painel) {
+        if (ehTurno) painel.classList.add('destaque-turno');
+        else painel.classList.remove('destaque-turno');
+    }
 }
 
 function renderizarPainelOponente(player, sid, ehTurnoDele) {

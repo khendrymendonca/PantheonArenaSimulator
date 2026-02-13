@@ -50,8 +50,20 @@ def handle_end_turn(data):
 @socketio.on('reiniciar')
 def handle_restart():
     global instancia_jogo
+    # Só o mestre ou se o jogo acabou pode reiniciar?
+    # Vamos deixar livre por enquanto para facilitar testes.
     instancia_jogo = Jogo()
     emit('estado_jogo', instancia_jogo.obter_estado(), broadcast=True)
+
+@socketio.on('iniciar_partida')
+def handle_start_game():
+    if instancia_jogo.id_mestre == request.sid:
+        if instancia_jogo.iniciar_jogo():
+            emit('estado_jogo', instancia_jogo.obter_estado(), broadcast=True)
+        else:
+            emit('erro', "Não há jogadores suficientes (mínimo 2).")
+    else:
+        emit('erro', "Apenas o mestre da arena pode iniciar a partida.")
 
 @socketio.on('ativar_bencao')
 def handle_activate_blessing(data):

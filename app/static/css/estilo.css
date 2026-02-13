@@ -24,11 +24,18 @@ body {
     color: var(--texto-brilhante);
     height: 100vh;
     overflow: hidden;
-    /* Removido: background-image de imagem externa */
     background-image: radial-gradient(circle at center, hsl(230, 25%, 12%) 0%, var(--bg-escuro) 100%);
     background-size: cover;
     display: flex;
     flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+    }
 }
 
 h1,
@@ -66,11 +73,17 @@ h3,
 }
 
 .login-box {
-    width: 450px;
-    /* Aumentado levemente para não apertar os componentes */
-    padding: 3.5rem;
+    width: 90%;
+    max-width: 450px;
+    padding: 2rem;
     text-align: center;
     animation: fadeInScale 0.5s ease-out;
+}
+
+@media (min-width: 768px) {
+    .login-box {
+        padding: 3.5rem;
+    }
 }
 
 @keyframes fadeInScale {
@@ -166,89 +179,178 @@ header {
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
+    padding: 1rem;
+    position: relative;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    #tabuleiro {
+        padding: 1.5rem 3rem;
+        justify-content: space-between;
+    }
+}
+
+/* --- DASHBOARD JOGADOR PREMIUM (DREAM UI) --- */
+.area-jogador-premium {
+    display: grid;
+    grid-template-columns: 100px 1fr 140px;
+    gap: 10px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    align-items: flex-end;
+    position: relative;
+    padding-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .area-jogador-premium {
+        grid-template-columns: 80px 1fr 120px;
+    }
+}
+
+.retrato-mini {
+    height: 140px;
+    padding: 2px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid var(--ouro-escuro);
+}
+
+.retrato-capa img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(0.3) contrast(1.1);
+}
+
+.nome-sub-retrato {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--ouro);
+    font-size: 0.6rem;
+    text-align: center;
+    padding: 4px 0;
+    font-weight: bold;
+}
+
+.ilustracao-central {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    position: relative;
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
+
+.ilustracao-central img {
+    height: 120%;
+    /* Sobressaindo um pouco */
+    max-width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+}
+
+@media (max-width: 600px) {
+    .ilustracao-central {
+        height: 160px;
+    }
+}
+
+.stats-premium {
+    height: 140px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    padding: 1.5rem 3rem;
+    background: rgba(20, 20, 25, 0.9) !important;
+}
+
+.stats-header {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+}
+
+.stat-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    color: white;
     position: relative;
 }
 
-/* --- ÁREAS DOS JOGADORES --- */
-.area-jogador {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 2rem;
-    width: 100%;
-    max-width: 1200px;
-    align-self: center;
+.stat-badge .badge-label {
+    font-size: 0.5rem;
+    font-weight: 900;
 }
 
-.area-jogador.ativo {
-    border-color: var(--ouro);
-    box-shadow: 0 0 20px hsla(45, 100%, 50%, 0.15);
+.stat-badge .badge-valor {
+    font-size: 0.9rem;
+    font-weight: 900;
 }
 
-.info-hero {
+.hp-badge {
+    background: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+.en-badge {
+    background: #3498db;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}
+
+.stat-box {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-}
-
-.info-hero h3 {
-    font-size: 1.4rem;
-    color: var(--ouro);
-}
-
-.atributos-mini {
-    display: flex;
-    gap: 0.8rem;
-    font-size: 0.75rem;
-    color: var(--texto-mutado);
-}
-
-.stats-container {
-    display: flex;
-    gap: 2.5rem;
     align-items: center;
 }
 
-.stat-item {
-    text-align: center;
-}
-
-.stat-label {
-    display: block;
-    font-size: 0.65rem;
-    text-transform: uppercase;
+.stat-box .label {
+    font-size: 0.55rem;
     color: var(--texto-mutado);
-    margin-bottom: 4px;
 }
 
-.stat-valor {
-    font-size: 1.5rem;
-    font-weight: 800;
+.stat-box .valor {
+    font-size: 0.8rem;
     font-family: 'Cinzel', serif;
+    font-weight: bold;
+    color: white;
 }
 
-.energia-texto {
-    color: var(--energia);
-    text-shadow: 0 0 10px hsla(200, 90%, 50%, 0.3);
+/* Slots de Efeitos */
+.slots-efeitos {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: -10px 0 15px 0;
 }
 
-.barra-vida-bg {
-    width: 250px;
-    height: 12px;
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 6px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.barra-vida-fill {
-    height: 100%;
-    background: linear-gradient(to right, #c0392b, #e74c3c, #ff7675);
-    width: 100%;
-    transition: width 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-    box-shadow: 0 0 10px rgba(231, 76, 60, 0.4);
+.slots-efeitos .icone-status {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--vidro-borda);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
 }
 
 /* --- BUFFS E STATUS --- */
@@ -283,17 +385,29 @@ header {
 
 /* --- LOG DE COMBATE --- */
 #log-combate {
-    position: absolute;
-    top: 50%;
-    left: 80px;
-    transform: translateY(-50%);
-    width: 280px;
-    height: 250px;
-    padding: 1rem;
-    font-size: 0.85rem;
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    height: 120px;
+    padding: 0.8rem;
+    font-size: 0.75rem;
     overflow-y: auto;
-    pointer-events: none;
     mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+
+@media (min-width: 768px) {
+    #log-combate {
+        position: absolute;
+        top: 50%;
+        left: 80px;
+        transform: translateY(-50%);
+        width: 280px;
+        height: 250px;
+        font-size: 0.85rem;
+        pointer-events: none;
+    }
 }
 
 .log-msg {
@@ -309,93 +423,108 @@ header {
 /* --- MÃO E CARTAS --- */
 .container-mao {
     display: flex;
-    justify-content: center;
-    gap: -20px;
-    /* Sobregramento leve */
+    justify-content: flex-start;
+    gap: 10px;
     padding: 1rem;
-    height: 240px;
+    height: auto;
+    overflow-x: auto;
+    width: 100%;
+    scrollbar-width: thin;
+}
+
+@media (min-width: 768px) {
+    .container-mao {
+        justify-content: center;
+        gap: -20px;
+        height: 240px;
+        overflow-x: visible;
+    }
 }
 
 .carta {
-    width: 160px;
+    min-width: 150px;
+    max-width: 150px;
     height: 220px;
-    background: linear-gradient(145deg, hsl(230, 20%, 15%), hsl(230, 20%, 8%));
-    border: 1px solid var(--vidro-borda);
-    border-radius: 12px;
-    padding: 12px;
+    background: white;
+    /* Estética da imagem */
+    border-radius: 8px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     cursor: pointer;
     transition: var(--transicao);
     position: relative;
     user-select: none;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
-.carta:hover {
-    transform: translateY(-20px) scale(1.1) rotate(2deg);
-    z-index: 100;
-    border-color: var(--ouro);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 15px hsla(45, 100%, 50%, 0.2);
-}
-
-.carta.desabilitada {
-    filter: grayscale(1) opacity(0.5);
-    cursor: not-allowed;
-}
-
-.carta-custo {
-    position: absolute;
-    top: -12px;
-    left: -12px;
-    width: 32px;
-    height: 32px;
-    background: var(--energia);
-    border-radius: 50%;
-    color: white;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    border: 2px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    flex-shrink: 0;
+    color: #333;
+    /* Texto escuro como em cartas reais */
+    overflow: hidden;
+    border: 3px solid #ddd;
 }
 
 .carta-header {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 4px;
-    margin-bottom: 8px;
-    text-align: center;
+    height: 15px;
+    /* Menor */
 }
 
 .carta-nome {
     font-family: 'Cinzel', serif;
     font-size: 0.8rem;
-    color: var(--ouro);
-}
-
-.carta-tipo {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    color: var(--texto-mutado);
+    color: #000;
+    font-weight: 900;
+    text-align: center;
+    margin-top: 130px;
+    /* Joga o texto pra baixo da imagem */
+    z-index: 2;
 }
 
 .carta-arte {
-    flex: 1;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    margin: 4px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    height: 125px;
+    background: #f1c40f;
+    border-radius: 5px;
+    margin: 0;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.carta-arte::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 60%, white 100%);
 }
 
 .carta-corpo {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     text-align: center;
-    color: var(--texto-mutado);
-    line-height: 1.2;
+    color: #555;
+    line-height: 1.1;
+    padding: 5px;
+    margin-top: 5px;
+    z-index: 2;
+}
+
+.carta-custo {
+    top: 5px;
+    right: 5px;
+    left: auto;
+    width: 25px;
+    height: 25px;
+    background: white;
+    color: #e67e22;
+    border: 2px solid #e67e22;
+    font-size: 0.8rem;
+}
+
+.carta.desabilitada {
+    filter: grayscale(0.8) brightness(0.7);
+    cursor: not-allowed;
 }
 
 /* --- BOTÕES --- */
@@ -477,41 +606,79 @@ header {
     background: var(--ouro);
 }
 
-/* --- NOVOS ESTILOS MULTIPLAYER --- */
-.status-icons {
-    display: flex;
-    gap: 5px;
-    margin-top: 5px;
-    justify-content: center;
-}
-
-.icone-status {
-    font-size: 1.2rem;
-    cursor: help;
-    position: relative;
+/* --- NOVOS ESTILOS PREMIUM --- */
+#sala-espera {
+    background: radial-gradient(circle at top, rgba(212, 175, 55, 0.15) 0%, var(--vidro-bg) 100%) !important;
+    border: 2px solid var(--ouro);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.1);
 }
 
 .destaque-turno {
+    filter: drop-shadow(0 0 10px var(--ouro));
     border: 2px solid var(--ouro) !important;
-    box-shadow: 0 0 15px var(--ouro);
 }
 
 .alvo-selecionado {
-    border: 2px solid #e74c3c !important;
+    border: 3px solid #e74c3c !important;
     box-shadow: 0 0 25px rgba(231, 76, 60, 0.6);
     transform: scale(1.03) translateY(-5px);
     z-index: 50;
 }
 
-#container-oponentes::-webkit-scrollbar {
-    width: 8px;
+#container-oponentes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    padding: 10px;
+    scrollbar-width: thin;
 }
 
-#container-oponentes::-webkit-scrollbar-thumb {
-    background: var(--ouro);
-    border-radius: 10px;
+@media (min-width: 768px) {
+    #container-oponentes {
+        flex-wrap: wrap;
+        justify-content: center;
+        overflow-x: visible;
+        max-height: 40vh;
+        overflow-y: auto;
+    }
 }
 
-.area-jogador {
-    transition: all 0.3s ease;
+.controles-batalha {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+    .controles-batalha {
+        flex-direction: row;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+}
+
+/* Oponentes Compactos para Mobile */
+@media (max-width: 600px) {
+    .area-jogador.vidro {
+        width: 140px;
+        flex-direction: column;
+        padding: 5px;
+    }
+
+    .area-jogador.vidro h3 {
+        font-size: 0.8rem;
+    }
+
+    .area-jogador.vidro .stat-valor {
+        font-size: 0.9rem;
+    }
+}
+
+.btn-bencao {
+    background: linear-gradient(135deg, #f1c40f, #e67e22) !important;
+    display: none;
 }

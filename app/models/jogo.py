@@ -7,6 +7,7 @@ class Jogo:
     def __init__(self):
         self.jogadores = {}  # {sid: personagem}
         self.ordem_turnos = [] # Lista de SIDs
+        self.iniciativas = {}  # {sid: valor_d20}
         self.indice_turno = 0
         self.jogador_turno_sid = None
         self.fase = 'espera' # 'espera', 'energia', 'revelacao', 'acao', 'concluido'
@@ -14,6 +15,7 @@ class Jogo:
         self.logs = []
         self.contador_turnos = 0
         self.max_jogadores = 20
+        self.id_mestre = None
 
     def log(self, mensagem):
         self.logs.append(mensagem)
@@ -24,22 +26,38 @@ class Jogo:
         if len(self.jogadores) < 2:
             return False
         
-        self.ordem_turnos = list(self.jogadores.keys())
-        random.shuffle(self.ordem_turnos)
+        self.log("Rando a iniciativa (1d20)...")
+        # Rolar 1d20 para cada jogador
+        self.iniciativas = {}
+        for sid, p in self.jogadores.items():
+            roll = random.randint(1, 20)
+            self.iniciativas[sid] = roll
+            self.log(f"{p.nome} rolou {roll} de iniciativa.")
+            
+        # Ordenar por iniciativa (maior para menor)
+        sids_ordenados = sorted(self.jogadores.keys(), key=lambda s: self.iniciativas[s], reverse=True)
+        
+        self.ordem_turnos = sids_ordenados
         self.indice_turno = 0
         self.jogador_turno_sid = self.ordem_turnos[0]
         self.fase = 'energia'
         self.contador_turnos = 0
-        self.log(f"Jogo iniciado com {len(self.jogadores)} jogadores!")
+        self.log(f"Ordem de batalha: " + " -> ".join([self.jogadores[s].nome for s in self.ordem_turnos]))
         self.iniciar_turno()
         return True
 
     def adicionar_jogador(self, sid, nome, id_personagem='apolo', id_passiva=1):
+        if self.fase != 'espera' and len(self.jogadores) >= 20:
+             return False, "O jogo já começou ou está lotado."
+             
         if len(self.jogadores) >= self.max_jogadores:
             return False, "Arena lotada (máx 20 jogadores)."
         
         if sid in self.jogadores:
             return False, "Você já está na arena."
+
+        if not self.id_mestre:
+            self.id_mestre = sid
 
         from .apolo import Apolo 
         
@@ -49,25 +67,17 @@ class Jogo:
         
         classe_escolhida = CLASSES.get(id_personagem, Apolo)
         novo_jogador = classe_escolhida()
-        novo_jogador.nome = nome
-        novo_jogador.sid = sid # Armazena o ID de socket no personagem
+        novo_jogador.nome = nome # Garantir que o nome seja setado
+        novo_jogador.sid = sid 
         
         try:
             if hasattr(novo_jogador, 'escolher_passiva'):
                 novo_jogador.escolher_passiva(int(id_passiva))
-                self.log(f"{nome} entrou na Arena com Passiva {id_passiva}.")
+                self.log(f"{nome} entrou na Arena.")
         except Exception as e:
             print(f"Erro ao aplicar passiva: {e}")
 
         self.jogadores[sid] = novo_jogador
-        
-        # Se for o primeiro, define como fase de espera. 
-        # A partida começa quando alguém der o comando iniciar ou atingir X jogadores? 
-        # Por enquanto mantemos automático ao chegar em 2, mas permitindo entrar mais depois?
-        # Vamos deixar que comece quando tiver 2, mas novos possam entrar se ainda não começou.
-        if len(self.jogadores) == 2 and self.fase == 'espera':
-             self.iniciar_jogo()
-
         return True, "Entrou na arena."
 
     def obter_estado(self):
@@ -76,7 +86,9 @@ class Jogo:
             'turno_sid': self.jogador_turno_sid,
             'fase': self.fase,
             'logs': self.logs,
-            'vencedor': self.vencedor
+            'vencedor': self.vencedor,
+            'id_mestre': self.id_mestre,
+            'iniciativas': self.iniciativas
         }
 
     def calcular_dano(self, dano_base, atacante, defensor, tipo='fisico'):

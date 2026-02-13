@@ -97,17 +97,27 @@
             <div class="bola-status"></div>
             <span>CONEXÃO: GRANDE ÉDEN</span>
         </div>
-        <div class="font-epic" style="color: var(--ouro); font-size: 1.2rem;">ELÍSIA: PORTAL DA ARENA</div>
-        <button class="btn-epico" style="font-size: 0.7rem; padding: 4px 12px;"
-            onclick="socket.emit('reiniciar')">Reiniciar</button>
+        <div class="font-epic title-portal">ELÍSIA: ARENA</div>
+        <button class="btn-epico btn-small" onclick="socket.emit('reiniciar')">Reiniciar</button>
     </header>
+
+    <!-- SALA DE ESPERA -->
+    <div id="sala-espera" class="vidro"
+        style="display: none; flex-direction: column; align-items: center; padding: 2rem; margin: 2rem auto; max-width: 600px; width: 90%;">
+        <h2 style="color: var(--ouro); margin-bottom: 1.5rem;">SALA DE ESPERA</h2>
+        <div id="lista-jogadores" style="width: 100%; margin-bottom: 2rem;">
+            <!-- Lista de quem entrou -->
+        </div>
+        <button id="btn-iniciar-jogo" class="btn-epico" style="display: none; width: 100%;"
+            onclick="socket.emit('iniciar_partida')">INICIAR PARTIDA (1d20)</button>
+        <p id="msg-espera" style="color: var(--texto-mutado); font-size: 0.9rem;">Aguardando o mestre iniciar...</p>
+    </div>
 
     <!-- TABULEIRO -->
     <div id="tabuleiro" style="display: none;">
 
         <!-- CONTAINER DE OPONENTES -->
-        <div id="container-oponentes"
-            style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; width: 100%; max-height: 40vh; overflow-y: auto; padding: 10px;">
+        <div id="container-oponentes">
             <!-- Painéis de oponentes injetados via JS -->
         </div>
 
@@ -121,33 +131,66 @@
             <div id="log-corpo"></div>
         </div>
 
-        <!-- JOGADOR -->
-        <div class="area-jogador vidro" id="painel-jogador">
-            <div class="stats-container">
-                <div class="stat-item">
-                    <span class="stat-label">Vida</span>
-                    <span class="stat-valor" id="meu-hp">30</span>
-                    <div class="barra-vida-bg">
-                        <div class="barra-vida-fill" id="meu-hp-barra"></div>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">PES</span>
-                    <span class="stat-valor" id="meu-pes" style="color: var(--ouro);">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Energia</span>
-                    <span class="stat-valor energia-texto" id="meu-energia">0</span>
+        <!-- JOGADOR (DREAM UI) -->
+        <div class="area-jogador-premium" id="painel-jogador">
+            <!-- Retrato do Herói (Esquerda) -->
+            <div class="retrato-mini vidro">
+                <div class="retrato-capa">
+                    <img src="/static/img/card_back.png" alt="Apolo"
+                        onerror="this.src='https://placehold.co/100x150/4d3b2b/white?text=APOLO'">
+                    <div class="nome-sub-retrato" id="meu-nome">PORTADOR</div>
                 </div>
             </div>
 
-            <div class="info-hero" style="text-align: right;">
-                <h3 id="meu-nome">PORTADOR</h3>
-                <div class="atributos-mini">
-                    RES: <span id="meu-res">0</span> | DOM: <span id="meu-dom">0</span> | DEF: <span
-                        id="meu-def">0</span> | ATQ: <span id="meu-atq">0</span>
+            <!-- Ilustração Central -->
+            <div class="ilustracao-central">
+                <img src="/static/img/apolo_full.png" alt="Apolo" id="img-personagem"
+                    onerror="this.src='https://placehold.co/200x300/f1c40f/white?text=PORTADOR+DA+VONTADE'">
+            </div>
+
+            <!-- Painel de Stats (Direita) -->
+            <div class="stats-premium vidro">
+                <div class="stats-header">
+                    <div class="stat-badge hp-badge">
+                        <span class="badge-label">HP</span>
+                        <span id="meu-hp" class="badge-valor">30</span>
+                    </div>
+                    <div class="stat-badge en-badge">
+                        <span class="badge-label">EN</span>
+                        <span id="meu-energia" class="badge-valor">0</span>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="label">ATQ</span>
+                        <span id="meu-atq" class="valor">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="label">DOM</span>
+                        <span id="meu-dom" class="valor">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="label">DEF</span>
+                        <span id="meu-def" class="valor">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="label">RES</span>
+                        <span id="meu-res" class="valor">0</span>
+                    </div>
+                </div>
+                <!-- Barra de Vida Discreta -->
+                <div class="barra-vida-bg" style="width: 100%; height: 6px; margin-top: 10px;">
+                    <div class="barra-vida-fill" id="meu-hp-barra"></div>
+                </div>
+                <div style="font-size: 0.7rem; color: var(--ouro); margin-top: 5px; text-align: center;">
+                    PES: <span id="meu-pes">0</span>
                 </div>
             </div>
+        </div>
+
+        <!-- AREA DE EFEITOS (SLOTS CIRCULARES) -->
+        <div id="meu-status-container" class="slots-efeitos">
+            <!-- Ícones como na imagem -->
         </div>
 
         <!-- MÃO DO JOGADOR -->
@@ -155,10 +198,9 @@
             <!-- Injetado via JS -->
         </div>
 
-        <div style="display: flex; justify-content: center; margin-bottom: 30px;">
-            <button id="btn-ativar-bencao" class="btn-epico"
-                style="background: linear-gradient(135deg, #f1c40f, #e67e22); margin-right: 10px; display: none;"
-                onclick="ativarBencao()">ATIVAR EFEITO DE PASSIVA (3 PES)</button>
+        <div class="controles-batalha">
+            <button id="btn-ativar-bencao" class="btn-epico btn-bencao" onclick="ativarBencao()">ATIVAR EFEITO DE
+                PASSIVA (3 PES)</button>
             <button id="btn-passar-turno" class="btn-epico" onclick="passarTurno()" disabled>ENCERRAR TURNO</button>
         </div>
 
