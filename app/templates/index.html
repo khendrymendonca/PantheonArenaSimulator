@@ -4,144 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANTHEON_ARENA_OS v1.0.4</title>
-
-    <!-- Google Fonts: Mono -->
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
-
-    <!-- SocketIO -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-
-    <!-- Estilo CMD -->
+    <title>PANTHEON_ARENA_CLI_v1.0.5</title>
     <link rel="stylesheet" href="/static/css/estilo.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
 </head>
 
 <body>
 
-    <!-- LOBBY CMD -->
-    <div id="overlay-login">
-        <div class="cmd-box">
-            <h1 style="color: var(--cmd-green); font-size: 1.5rem; margin-bottom: 30px;">
-                PANTHEON_ARENA_TERMINAL [Versão 1.0.4]<br>
-                (c) 2026 Elisia Corp. Todos os direitos reservados.
-            </h1>
+    <!-- BUFFER DE OUTPUT -->
+    <div id="terminal-output"></div>
 
-            <div class="cmd-prompt">LOGIN:</div>
-            <input type="text" id="input-nome" class="input-cmd" placeholder="Digite seu codinome..." maxlength="15"
-                autofocus>
-
-            <div class="cmd-prompt">CLASSES_DISPONIVEIS (APOLO):</div>
-            <select id="select-personagem" class="input-cmd" onchange="atualizarPassivas()">
-                <option value="apolo" selected>APOLO_VWILL_HOLDER</option>
-            </select>
-
-            <div id="secao-passiva" style="display: none; margin-top: 10px;">
-                <div class="cmd-prompt">SELECIONE_PASSIVA [1-4]:</div>
-                <div style="font-size: 0.8rem; color: #888; margin-bottom: 20px;">
-                    1. CALOR_ESTELAR (DEF+1)<br>
-                    2. CABECA_QUENTE (IMUNE_DOT, HP-5)<br>
-                    3. MATADOR_PITON (EN_ON_HIT, ATK_COST+2)<br>
-                    4. PUNICAO_NIOBE (ATK+1)
-                </div>
-                <select name="passiva" id="select-passiva" class="input-cmd">
-                    <option value="1">1_CALOR_ESTELAR</option>
-                    <option value="2">2_CABECA_QUENTE</option>
-                    <option value="3">3_MATADOR_PITON</option>
-                    <option value="4">4_PUNICAO_NIOBE</option>
-                </select>
-            </div>
-
-            <button class="btn-cmd" style="margin-top: 20px; width: 100%;"
-                onclick="entrarNaArena()">CONNECT_TO_ARENA</button>
-        </div>
+    <!-- PROMPT DE INPUT -->
+    <div id="terminal-input-container">
+        <span id="prompt-label">C:\ELISIA\ARENA></span>
+        <input type="text" id="command-input" autocomplete="off" autofocus placeholder="Digite um comando...">
     </div>
 
-    <!-- TERMINAL WINDOW -->
-    <div class="terminal-window">
-        <div class="terminal-header">
-            <span>TERMINAL: ARENA_ELISIA_PORTAL</span>
-            <span>SYSTEM_READY</span>
-        </div>
-
-        <!-- SALA DE ESPERA -->
-        <div id="sala-espera" style="display: none; padding: 20px;">
-            <div style="color: var(--cmd-green); margin-bottom: 20px;">> AGUARDANDO_AUTORIZACAO_CONSELHO_ELISIA...</div>
-            <div id="lista-jogadores" style="border: 1px dashed #444; padding: 10px; margin-bottom: 20px;">
-                <!-- Lista via JS -->
-            </div>
-            <button id="btn-iniciar-jogo" class="btn-cmd" style="display: none;"
-                onclick="socket.emit('iniciar_partida')">INIT_PROTOCOL_1d20</button>
-            <p id="msg-espera" style="color: #666; font-size: 0.8rem;">Aguardando mestre abrir o portão...</p>
-        </div>
-
-        <!-- TABULEIRO CMD -->
-        <div id="tabuleiro" style="display: none;">
-
-            <div id="container-oponentes">
-                <!-- Oponentes compactos -->
-            </div>
-
-            <div id="log-combate">
-                <div id="log-corpo"></div>
-            </div>
-
-            <!-- HUD TERMINAL -->
-            <div class="hud-terminal" id="painel-jogador">
-                <div class="hud-section">
-                    <div class="hud-section-title">PORTADOR_STATUS</div>
-                    <div class="stat-row">
-                        <span>IDENT:</span> <span id="meu-nome">DESCONHECIDO</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>HP:</span> <span id="meu-hp" style="color: var(--cmd-red);">30</span>
-                        <div id="meu-hp-barra-ascii" class="barra-ascii">[||||||||||]</div>
-                    </div>
-                    <div class="stat-row">
-                        <span>EN:</span> <span id="meu-energia" style="color: var(--cmd-blue);">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>PES:</span> <span id="meu-pes" style="color: var(--cmd-gold);">0</span>
-                    </div>
-                </div>
-
-                <div class="hud-section">
-                    <div class="hud-section-title">CORE_ATTRIBUTES</div>
-                    <div class="stat-row">
-                        <span>ATQ:</span> <span id="meu-atq">0</span>
-                        <span>DEF:</span> <span id="meu-def">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>DOM:</span> <span id="meu-dom">0</span>
-                        <span>RES:</span> <span id="meu-res">0</span>
-                    </div>
-                    <div id="meu-status-container" style="color: #888; font-size: 0.7rem; margin-top: 5px;">
-                        ACTIVE_MODS: NONE
-                    </div>
-                </div>
-            </div>
-
-            <!-- MÃO TERMINAL -->
-            <div class="container-mao" id="mao-cartas">
-                <!-- Cartas CMD -->
-            </div>
-
-            <div class="controles-batalha">
-                <button id="btn-ativar-bencao" class="btn-cmd"
-                    style="display: none; border-color: var(--cmd-gold); font-size: 0.7rem;"
-                    onclick="ativarBencao()">EXEC_PASSIVE_EFFECT (3 PES)</button>
-                <button id="btn-passar-turno" class="btn-cmd" style="width: 100%; border-color: var(--cmd-green);"
-                    onclick="passarTurno()" disabled>END_PROCESS_TURNO</button>
-            </div>
-
-        </div>
-
-        <div class="terminal-header" style="background: #111; margin-top: auto;">
-            <span id="indicador-turno">IDLE</span>
-            <span style="cursor: pointer;" onclick="socket.emit('reiniciar')">[X] REBOOT_SYSTEM</span>
-        </div>
-    </div>
-
-    <!-- Script Principal -->
     <script src="/static/js/jogo.js"></script>
 </body>
 
