@@ -4,206 +4,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pantheon Arena - O Duelo dos Portadores</title>
+    <title>PANTHEON_ARENA_OS v1.0.4</title>
 
-    <!-- Fontes Premium -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;700;900&display=swap"
-        rel="stylesheet">
+    <!-- Google Fonts: Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
 
     <!-- SocketIO -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
 
-    <!-- Estilo -->
+    <!-- Estilo CMD -->
     <link rel="stylesheet" href="/static/css/estilo.css">
 </head>
 
 <body>
 
-    <!-- LOBBY DE ENTRADA -->
+    <!-- LOBBY CMD -->
     <div id="overlay-login">
-        <div class="login-box vidro">
-            <h1 style="letter-spacing: 5px; margin-bottom: 0.5rem;">PANTHEON ARENA</h1>
-            <p style="margin-bottom: 2.5rem; color: var(--texto-mutado); font-size: 0.9rem; line-height: 1.6;">
-                Sob os sóis de Eternus, Redentia e El.
-                <br>Assuma seu posto como <b style="color: var(--ouro)">Portador da Vontade</b>.
-            </p>
+        <div class="cmd-box">
+            <h1 style="color: var(--cmd-green); font-size: 1.5rem; margin-bottom: 30px;">
+                PANTHEON_ARENA_TERMINAL [Versão 1.0.4]<br>
+                (c) 2026 Elisia Corp. Todos os direitos reservados.
+            </h1>
 
-            <input type="text" id="input-nome" class="input-estilizado" placeholder="Seu Nome de Portador..."
-                maxlength="15">
+            <div class="cmd-prompt">LOGIN:</div>
+            <input type="text" id="input-nome" class="input-cmd" placeholder="Digite seu codinome..." maxlength="15"
+                autofocus>
 
-            <!-- Seleção de Personagem -->
-            <div style="margin-bottom: 2rem; text-align: left;">
-                <label style="color: var(--ouro); font-size: 0.9rem;">ESCOLHA SEU CAMPEÃO</label>
-                <select id="select-personagem" class="input-estilizado" onchange="atualizarPassivas()">
-                    <option value="" disabled selected>Selecione seu herói...</option>
-                    <option value="apolo">Apolo - O Arqueiro Solar</option>
+            <div class="cmd-prompt">CLASSES_DISPONIVEIS (APOLO):</div>
+            <select id="select-personagem" class="input-cmd" onchange="atualizarPassivas()">
+                <option value="apolo" selected>APOLO_VWILL_HOLDER</option>
+            </select>
+
+            <div id="secao-passiva" style="display: none; margin-top: 10px;">
+                <div class="cmd-prompt">SELECIONE_PASSIVA [1-4]:</div>
+                <div style="font-size: 0.8rem; color: #888; margin-bottom: 20px;">
+                    1. CALOR_ESTELAR (DEF+1)<br>
+                    2. CABECA_QUENTE (IMUNE_DOT, HP-5)<br>
+                    3. MATADOR_PITON (EN_ON_HIT, ATK_COST+2)<br>
+                    4. PUNICAO_NIOBE (ATK+1)
+                </div>
+                <select name="passiva" id="select-passiva" class="input-cmd">
+                    <option value="1">1_CALOR_ESTELAR</option>
+                    <option value="2">2_CABECA_QUENTE</option>
+                    <option value="3">3_MATADOR_PITON</option>
+                    <option value="4">4_PUNICAO_NIOBE</option>
                 </select>
             </div>
 
-            <!-- Seleção de Passiva -->
-            <div id="secao-passiva" style="margin-bottom: 2rem; text-align: left; display: none;">
-                <label style="color: var(--ouro); font-size: 0.9rem;">PASSIVA</label>
-                <div class="passivas-container"
-                    style="color: var(--texto-mutado); font-size: 0.85rem; margin-top: 10px;">
-
-                    <div style="margin-bottom: 15px;">
-                        <input type="radio" name="passiva" value="1" id="p1" checked>
-                        <label for="p1">
-                            <strong style="color: #fff">Calor Estelar</strong><br>
-                            Aumenta a DEF +1.
-                        </label>
-                    </div>
-
-                    <div style="margin-bottom: 15px;">
-                        <input type="radio" name="passiva" value="2" id="p2">
-                        <label for="p2">
-                            <strong style="color: #fff">Cabeça Quente</strong><br>
-                            Não recebe dano de efeito maligno. Perde 5 de HP Inicial.
-                        </label>
-                    </div>
-
-                    <div style="margin-bottom: 15px;">
-                        <input type="radio" name="passiva" value="3" id="p3">
-                        <label for="p3">
-                            <strong style="color: #fff">Matador da Píton</strong><br>
-                            Ao causar dano a um oponente com Envenenamento, ganhe +1 de energia no próximo turno (1 vez
-                            por turno). Todos as habilidades com atributo ATQ, causam Envenenamento e custam 2 a mais.
-                        </label>
-                    </div>
-
-                    <div style="margin-bottom: 15px;">
-                        <input type="radio" name="passiva" value="4" id="p4">
-                        <label for="p4">
-                            <strong style="color: #fff">Punição de Niobe</strong><br>
-                            Aumenta o ATQ +1.
-                        </label>
-                    </div>
-
-                </div>
-            </div>
-
-            <div style="display: flex; justify-content: center;">
-                <button class="btn-epico" style="width: 100%;" onclick="entrarNaArena()">ENTRAR NA ARENA</button>
-            </div>
+            <button class="btn-cmd" style="margin-top: 20px; width: 100%;"
+                onclick="entrarNaArena()">CONNECT_TO_ARENA</button>
         </div>
     </div>
 
-    <!-- HEADER DO JOGO -->
-    <header>
-        <div class="status-conexao">
-            <div class="bola-status"></div>
-            <span>CONEXÃO: GRANDE ÉDEN</span>
-        </div>
-        <div class="font-epic title-portal">ELÍSIA: ARENA</div>
-        <button class="btn-epico btn-small" onclick="socket.emit('reiniciar')">Reiniciar</button>
-    </header>
-
-    <!-- SALA DE ESPERA -->
-    <div id="sala-espera" class="vidro"
-        style="display: none; flex-direction: column; align-items: center; padding: 2rem; margin: 2rem auto; max-width: 600px; width: 90%;">
-        <h2 style="color: var(--ouro); margin-bottom: 1.5rem;">SALA DE ESPERA</h2>
-        <div id="lista-jogadores" style="width: 100%; margin-bottom: 2rem;">
-            <!-- Lista de quem entrou -->
-        </div>
-        <button id="btn-iniciar-jogo" class="btn-epico" style="display: none; width: 100%;"
-            onclick="socket.emit('iniciar_partida')">INICIAR PARTIDA (1d20)</button>
-        <p id="msg-espera" style="color: var(--texto-mutado); font-size: 0.9rem;">Aguardando o mestre iniciar...</p>
-    </div>
-
-    <!-- TABULEIRO -->
-    <div id="tabuleiro" style="display: none;">
-
-        <!-- CONTAINER DE OPONENTES -->
-        <div id="container-oponentes">
-            <!-- Painéis de oponentes injetados via JS -->
+    <!-- TERMINAL WINDOW -->
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>TERMINAL: ARENA_ELISIA_PORTAL</span>
+            <span>SYSTEM_READY</span>
         </div>
 
-        <!-- INDICADOR DE TURNO / BANNER -->
-        <div class="turn-banner" id="indicador-turno">
-            CARREGANDO...
+        <!-- SALA DE ESPERA -->
+        <div id="sala-espera" style="display: none; padding: 20px;">
+            <div style="color: var(--cmd-green); margin-bottom: 20px;">> AGUARDANDO_AUTORIZACAO_CONSELHO_ELISIA...</div>
+            <div id="lista-jogadores" style="border: 1px dashed #444; padding: 10px; margin-bottom: 20px;">
+                <!-- Lista via JS -->
+            </div>
+            <button id="btn-iniciar-jogo" class="btn-cmd" style="display: none;"
+                onclick="socket.emit('iniciar_partida')">INIT_PROTOCOL_1d20</button>
+            <p id="msg-espera" style="color: #666; font-size: 0.8rem;">Aguardando mestre abrir o portão...</p>
         </div>
 
-        <!-- LOG DE COMBATE -->
-        <div id="log-combate" class="vidro">
-            <div id="log-corpo"></div>
-        </div>
+        <!-- TABULEIRO CMD -->
+        <div id="tabuleiro" style="display: none;">
 
-        <!-- JOGADOR (DREAM UI) -->
-        <div class="area-jogador-premium" id="painel-jogador">
-            <!-- Retrato do Herói (Esquerda) -->
-            <div class="retrato-mini vidro">
-                <div class="retrato-capa">
-                    <img src="/static/img/card_back.png" alt="Apolo"
-                        onerror="this.src='https://placehold.co/100x150/4d3b2b/white?text=APOLO'">
-                    <div class="nome-sub-retrato" id="meu-nome">PORTADOR</div>
+            <div id="container-oponentes">
+                <!-- Oponentes compactos -->
+            </div>
+
+            <div id="log-combate">
+                <div id="log-corpo"></div>
+            </div>
+
+            <!-- HUD TERMINAL -->
+            <div class="hud-terminal" id="painel-jogador">
+                <div class="hud-section">
+                    <div class="hud-section-title">PORTADOR_STATUS</div>
+                    <div class="stat-row">
+                        <span>IDENT:</span> <span id="meu-nome">DESCONHECIDO</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>HP:</span> <span id="meu-hp" style="color: var(--cmd-red);">30</span>
+                        <div id="meu-hp-barra-ascii" class="barra-ascii">[||||||||||]</div>
+                    </div>
+                    <div class="stat-row">
+                        <span>EN:</span> <span id="meu-energia" style="color: var(--cmd-blue);">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>PES:</span> <span id="meu-pes" style="color: var(--cmd-gold);">0</span>
+                    </div>
+                </div>
+
+                <div class="hud-section">
+                    <div class="hud-section-title">CORE_ATTRIBUTES</div>
+                    <div class="stat-row">
+                        <span>ATQ:</span> <span id="meu-atq">0</span>
+                        <span>DEF:</span> <span id="meu-def">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>DOM:</span> <span id="meu-dom">0</span>
+                        <span>RES:</span> <span id="meu-res">0</span>
+                    </div>
+                    <div id="meu-status-container" style="color: #888; font-size: 0.7rem; margin-top: 5px;">
+                        ACTIVE_MODS: NONE
+                    </div>
                 </div>
             </div>
 
-            <!-- Ilustração Central -->
-            <div class="ilustracao-central">
-                <img src="/static/img/apolo_full.png" alt="Apolo" id="img-personagem"
-                    onerror="this.src='https://placehold.co/200x300/f1c40f/white?text=PORTADOR+DA+VONTADE'">
+            <!-- MÃO TERMINAL -->
+            <div class="container-mao" id="mao-cartas">
+                <!-- Cartas CMD -->
             </div>
 
-            <!-- Painel de Stats (Direita) -->
-            <div class="stats-premium vidro">
-                <div class="stats-header">
-                    <div class="stat-badge hp-badge">
-                        <span class="badge-label">HP</span>
-                        <span id="meu-hp" class="badge-valor">30</span>
-                    </div>
-                    <div class="stat-badge en-badge">
-                        <span class="badge-label">EN</span>
-                        <span id="meu-energia" class="badge-valor">0</span>
-                    </div>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <span class="label">ATQ</span>
-                        <span id="meu-atq" class="valor">0</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="label">DOM</span>
-                        <span id="meu-dom" class="valor">0</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="label">DEF</span>
-                        <span id="meu-def" class="valor">0</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="label">RES</span>
-                        <span id="meu-res" class="valor">0</span>
-                    </div>
-                </div>
-                <!-- Barra de Vida Discreta -->
-                <div class="barra-vida-bg" style="width: 100%; height: 6px; margin-top: 10px;">
-                    <div class="barra-vida-fill" id="meu-hp-barra"></div>
-                </div>
-                <div style="font-size: 0.7rem; color: var(--ouro); margin-top: 5px; text-align: center;">
-                    PES: <span id="meu-pes">0</span>
-                </div>
+            <div class="controles-batalha">
+                <button id="btn-ativar-bencao" class="btn-cmd"
+                    style="display: none; border-color: var(--cmd-gold); font-size: 0.7rem;"
+                    onclick="ativarBencao()">EXEC_PASSIVE_EFFECT (3 PES)</button>
+                <button id="btn-passar-turno" class="btn-cmd" style="width: 100%; border-color: var(--cmd-green);"
+                    onclick="passarTurno()" disabled>END_PROCESS_TURNO</button>
             </div>
+
         </div>
 
-        <!-- AREA DE EFEITOS (SLOTS CIRCULARES) -->
-        <div id="meu-status-container" class="slots-efeitos">
-            <!-- Ícones como na imagem -->
+        <div class="terminal-header" style="background: #111; margin-top: auto;">
+            <span id="indicador-turno">IDLE</span>
+            <span style="cursor: pointer;" onclick="socket.emit('reiniciar')">[X] REBOOT_SYSTEM</span>
         </div>
-
-        <!-- MÃO DO JOGADOR -->
-        <div class="container-mao" id="mao-cartas">
-            <!-- Injetado via JS -->
-        </div>
-
-        <div class="controles-batalha">
-            <button id="btn-ativar-bencao" class="btn-epico btn-bencao" onclick="ativarBencao()">ATIVAR EFEITO DE
-                PASSIVA (3 PES)</button>
-            <button id="btn-passar-turno" class="btn-epico" onclick="passarTurno()" disabled>ENCERRAR TURNO</button>
-        </div>
-
     </div>
 
     <!-- Script Principal -->
